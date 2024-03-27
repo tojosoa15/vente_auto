@@ -1,0 +1,151 @@
+{# templates/import_evenements/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Import Evenements{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/datatables/datatables.min.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('assets/jquery/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('assets/datatables/datatables.min.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+    <h2>Import Evenements</h2>
+
+    {{ form_start(form) }}
+    {{ form_row(form.file) }}
+    <button type="submit">Import</button>
+    {{ form_end(form) }}
+
+    <h2>Liste des evenements</h2>
+    <div class="table-responsive  kl-table-responsive datatable-custom kl-default-table-resp kl-bg-white">
+        <table id="evenements-table" class="display"
+                data-url-edit="{{ path('edit_evenement', { id : 0}) }}"
+                data-url-delete="{{ path('delete_evenement', { id : 0}) }}"
+                data-url-show="{{ path('show_evenement', { id : 0} ) }}"
+                class="table w-100 table-lg table-borderless  kl-table-striped table-thead-bordered table-nowrap table-align-middle card-table mb-0">
+            <thead class="thead-light">
+                <tr>
+                    <th>Compte Affaire</th>
+                    <th>Compte évènement (Veh)</th>
+                    <th>Compte dernier évènement (Veh)</th>
+                    <th>Numéro de fiche</th>
+                    <th>Libellé civilité</th>
+                    <th>Propriétaire actuel du véhicule</th>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>N° et Nom de la voie</th>
+                    <th>Complément adresse 1</th>
+                    <th>Code postal</th>
+                    <th>Ville</th>
+                    <th>Tél domicille</th>
+                    <th>Tél portable</th>
+                    <th>Tél job</th>
+                    <th>Email</th>
+                    <th>Date de mise en circulation</th>
+                    <th>Date achat (date de livraison)</th>
+                    <th>Date dernier évènement (Veh)</th>
+                    <th>Libellé marque (Mrq)</th>
+                    <th>Libellé modèle (Mod)</th>
+                    <th>Version</th>
+                    <th>VIN</th>
+                    <th>Immatriculation</th>
+                    <th>Type de prospect</th>
+                    <th>Kilometrage</th>
+                    <th>Libelle energie</th>
+                    <th>Vendeur vn</th>
+                    <th>Vendeur vo</th>
+                    <th>Commentaire de facturation(Veh)</th>
+                    <th>Type vn vo</th>
+                    <th>Numéro de dossier vn vo</th>
+                    <th>Intermediaire de vente vn</th>
+                    <th>Date évènement (Veh)</th>
+                    <th>Origine évènement (Veh)</th>
+                    <th class="pe-0">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+    $(document).ready(function() {
+            $('#evenements-table').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": "{{ path('evenements_list') }}",
+                "columns": [
+                    {"data": "compteAffaire"},
+                    {"data": "compteEvenement"},
+                    {"data": "lastEventCount"},
+                    {"data": "fileNumber"},
+                    {"data": "civilityWording"},
+                    {"data": "currentVehicleOwner"},
+                    {"data": "name"},
+                    {"data": "firstName"},
+                    {"data": "routeNumberAndName"},
+                    {"data": "adressComplement"},
+                    {"data": "postalCode"},
+                    {"data": "city"},
+                    {"data": "homePhone"},
+                    {"data": "cellPhone"},
+                    {"data": "phoneJob"},
+                    {"data": "email"},
+                    {"data": "dateOfCirculation"},
+                    {"data": "purchaseDate"},
+                    {"data": "lastEventDate"},
+                    {"data": "brandName"},
+                    {"data": "modelWording"},
+                    {"data": "version"},
+                    {"data": "vin"},
+                    {"data": "registration"},
+                    {"data": "leadType"},
+                    {"data": "mileage"},
+                    {"data": "energyLabel"},
+                    {"data": "sellerVN"},
+                    {"data": "sellerVO"},
+                    {"data": "billingComment"},
+                    {"data": "typeVoVn"},
+                    {"data": "fileNumberVnVo"},
+                    {"data": "vnSalesIntermediary"},
+                    {"data": "eventDate"},
+                    {"data": "originOfEvent"},
+                    {
+                        "data": "id",
+                        render: function (data, type, row) {
+                            let urlDelete = $('#evenements-table').data('url-delete').replace('/0/', '/' + data + '/');
+                            let urlEdit   = $('#evenements-table').data('url-edit').replace('/0/', '/' + data + '/');
+                            let urlShow   = $('#evenements-table').data('url-show').replace('/0/', '/' + data + '/');
+
+                            let showButton = `<div class="d-flex align-items-center">
+                                <a href="${urlShow}" class="p-0 btn btn-icon btn-sm  kl-text-21 " data-toggle="tooltip" title="Voir" >
+                                    <img src="{{ asset('assets/theme/img/icon/icons-show.png') }}" alt="Supprimer">
+                                </a>`;
+                            let editButton = `<a href="${urlEdit}" class="p-0 pt-2 btn btn-icon btn-sm pen-vertical-icon kl-text-21"
+                                    data-toggle="tooltip" title="Modifier" >
+                                    <img src="{{ asset('assets/theme/img/icon/icons-edit.svg') }}" alt="Supprimer">
+                                </a>`;
+                            let deleteButton = `<a href="javascript:;" data-href="${urlDelete}" class="p-0 btn btn-icon btn-sm remove-item-datatable  kl-text-21"
+                                data-message="Êtes-vous sûr de bien vouloir supprimer cette evenement?"
+                                data-toggle="tooltip" title="Supprimer" >
+                                    <img src="{{ asset('assets/theme/img/icon/icons-delete.svg') }}" alt="Supprimer">
+                                </a>`;
+
+                            return `<div class="d-flex align-items-center">${showButton} ${editButton} ${deleteButton}</div>`;
+                        }
+                    }
+                ],
+                "ajax": {
+                    "url": "{{ path('evenements_list') }}",
+                    "dataSrc": ""
+                }
+            });
+        });
+    </script>
+
+{% endblock %}

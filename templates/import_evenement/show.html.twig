@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détail Evenements{% endblock %}
+{% block body %}
+<main id="content" role="main" class="main kl-bg-gray-tertiary kl-main-content-admin">
+    <!-- Content -->
+    <div class="content container-fluid">
+        <div class="kl-title-tab-gp d-flex justify-content-between">
+            <h2 class="kl-title-default-tb">Détails evenement</h2>
+        </div>
+        <div class="card kl-card-detail-prd kl-bg-white">
+            <div class="card-body p-0">
+                <div class="kl-wrapper-default-table row gx-0">
+                    <div class="row">
+                        <div class="col-sm-4 pt-2">
+                            <input class="form-control" type="text" value="{{ evenement.businessAccount }}" disabled />
+                        </div>
+                        <div class="col-sm-4 pt-2">
+                            <input class="form-control" type="text" value="{{ evenement.eventAccount }}" disabled />
+                        </div>
+                        <div class="col-sm-4 pt-2">
+                            <input class="form-control" type="text" value="{{ evenement.businessAccount }}" disabled />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}
