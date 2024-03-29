@@ -5,22 +5,25 @@ namespace App\Entity;
 use App\Repository\EvenementsRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 
 #[ORM\Entity(repositoryClass: EvenementsRepository::class)]
 class Evenements
 {
+    use SoftDeleteableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $businessAccount = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $eventAccount = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $lastEventCount = null;
 
     #[ORM\Column]
@@ -328,7 +331,7 @@ class Evenements
         return $this->dateOfCirculation;
     }
 
-    public function setDateOfCirculation(?\DateTimeInterface $dateOfCirculation): static
+    public function setDateOfCirculation(\DateTimeInterface $dateOfCirculation): static
     {
         $this->dateOfCirculation = $dateOfCirculation;
 

@@ -1,7 +1,20 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Détail Evenements{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/evenement.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/bootstrap/bootstrap.min.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('assets/jquery/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('assets/js/evenement.js') }}"></script>
+    <script src="{{ asset('assets/js/bootstrap/bootstrap.min.js') }}"></script>
+{% endblock %}
+
 {% block body %}
+
 <main id="content" role="main" class="main kl-bg-gray-tertiary kl-main-content-admin">
     <!-- Content -->
     <div class="content container-fluid">
@@ -11,18 +24,148 @@
         <div class="card kl-card-detail-prd kl-bg-white">
             <div class="card-body p-0">
                 <div class="kl-wrapper-default-table row gx-0">
-                    <div class="row">
-                        <div class="col-sm-4 pt-2">
-                            <input class="form-control" type="text" value="{{ evenement.businessAccount }}" disabled />
-                        </div>
-                        <div class="col-sm-4 pt-2">
-                            <input class="form-control" type="text" value="{{ evenement.eventAccount }}" disabled />
-                        </div>
-                        <div class="col-sm-4 pt-2">
-                            <input class="form-control" type="text" value="{{ evenement.businessAccount }}" disabled />
-                        </div>
+                    <div class="col-sm-4 pt-2">
+                        <label>Compte Affaire</label>
+                        <input class="form-control" type="text" value="{{ evenement.businessAccount }}" disabled />
+                    </div>
+                    <div class="col-sm-4 pt-2">
+                        <label>Compte évènement (Veh)</label>
+                        <input class="form-control" type="text" value="{{ evenement.eventAccount }}" disabled />
+                    </div>
+                    <div class="col-sm-4 pt-2">
+                        <label>Compte dernier évènement (Veh)</label>
+                        <input class="form-control" type="text" value="{{ evenement.lastEventCount }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Numéro de fiche</label>
+                        <input class="form-control" type="text" value="{{ evenement.fileNumber }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Libellé civilité</label>
+                        <input class="form-control" type="text" value="{{ evenement.civilityWording }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Propriétaire actuel du véhicule</label>
+                        <input class="form-control" type="text" value="{{ evenement.currentVehicleOwner }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Nom</label>
+                        <input class="form-control" type="text" value="{{ evenement.name }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Prénom</label>
+                        <input class="form-control" type="text" value="{{ evenement.firstName }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>N° et Nom de la voie</label>
+                        <input class="form-control" type="text" value="{{ evenement.routeNumberAndName }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Complément adresse 1</label>
+                        <input class="form-control" type="text" value="{{ evenement.adressComplement }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Code postal</label>
+                        <input class="form-control" type="text" value="{{ evenement.postalCode }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Ville</label>
+                        <input class="form-control" type="text" value="{{ evenement.city }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Tel domicile</label>
+                        <input class="form-control" type="text" value="{{ evenement.homePhone }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Tel portable</label>
+                        <input class="form-control" type="text" value="{{ evenement.cellPhone }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Tel job</label>
+                        <input class="form-control" type="text" value="{{ evenement.phoneJob }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Email</label>
+                        <input class="form-control" type="text" value="{{ evenement.email }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Date de mise en circulation</label>
+                        <input class="form-control" type="text" value="{{ evenement.dateOfCirculation ? evenement.dateOfCirculation|date('d/m/Y') : '' }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Date achat (date de livraison)</label>
+                        <input class="form-control" type="text" value="{{ evenement.purchaseDate ? evenement.purchaseDate|date('d/m/Y') : ''}}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Date dernier évènement (Veh)</label>
+                        <input class="form-control" type="text" value="{{ evenement.lastEventDate ? evenement.lastEventDate|date('d/m/Y') : ''}}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Libellé marque (Mrq)</label>
+                        <input class="form-control" type="text" value="{{ evenement.brandName }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Libellé modèle (Mod)</label>
+                        <input class="form-control" type="text" value="{{ evenement.modelWording }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Version</label>
+                        <input class="form-control" type="text" value="{{ evenement.version }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>VIN</label>
+                        <input class="form-control" type="text" value="{{ evenement.vin }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Immatriculation</label>
+                        <input class="form-control" type="text" value="{{ evenement.registration }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Type de prospect</label>
+                        <input class="form-control" type="text" value="{{ evenement.leadType }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Kilometrage</label>
+                        <input class="form-control" type="text" value="{{ evenement.mileage }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Libellé energie</label>
+                        <input class="form-control" type="text" value="{{ evenement.energyLabel }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Vendeur vn</label>
+                        <input class="form-control" type="text" value="{{ evenement.sellerVN }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Vendeur vo</label>
+                        <input class="form-control" type="text" value="{{ evenement.sellerVO }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Commentaire de facturation (Veh)</label>
+                        <input class="form-control" type="text" value="{{ evenement.billingComment }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Type vn vo</label>
+                        <input class="form-control" type="text" value="{{ evenement.typeVoVn }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Numéro de dossier VN VO</label>
+                        <input class="form-control" type="text" value="{{ evenement.fileNumberVnVo }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Intermediaire de vente VN</label>
+                        <input class="form-control" type="text" value="{{ evenement.vnSalesIntermediary }}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Date évènement (Veh)</label>
+                        <input class="form-control" type="text" value="{{ evenement.eventDate ? evenement.eventDate|date('d/m/Y') : ''}}" disabled />
+                    </div>
+                     <div class="col-sm-4 pt-2">
+                        <label>Origine évènement (Veh)</label>
+                        <input class="form-control" type="text" value="{{ evenement.originOfEvent }}" disabled />
                     </div>
                 </div>
+                <button type="button" class="btn btn-secondary" onclick="window.location='{{ path('import_evenements') }}';">Retour à la liste</button>
             </div>
         </div>
     </div>

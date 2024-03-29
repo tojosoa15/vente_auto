@@ -3,8 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Evenements;
+use App\Form\EvenementType;
 use App\Form\ImportEvenementType;
 use App\Repository\EvenementsRepository;
+use DateTime;
+use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
@@ -130,7 +133,7 @@ class ImportEvenementController extends AbstractController
     #[Route('/evenements', name: 'evenements_list', methods:['GET'])]
     public function ajaxListEvenements(): JsonResponse
     {
-        $evenements = $this->em->getRepository(Evenements::class)->findAll();
+        $evenements = $this->em->getRepository(Evenements::class)->findBy(['deletedAt' => null]);
         $data       = [];
 
         foreach ($evenements as $evenement) {
@@ -177,6 +180,89 @@ class ImportEvenementController extends AbstractController
         return new JsonResponse($data);
     }
 
+    #[Route('/evenements/ajouter', name: 'add_evenement', methods:['POST'])]
+    public function ajouterEvenement(Request $request, EvenementsRepository $evenementsRepository): Response
+    {
+        // Récupérer les données de la requête POST
+        $compteAffaire          = $request->request->get('compteAffaire');
+        $compteEvenement        = $request->request->get('compteEvenement');
+        $lastEventCount         = $request->request->get('lastEventCount');
+        $fileNumber             = $request->request->get('fileNumber');
+        $civilityWording        = $request->request->get('civilityWording');
+        $currentVehicleOwner    = $request->request->get('currentVehicleOwner');
+        $name                   = $request->request->get('name');
+        $firstName              = $request->request->get('firstName');
+        $routeNumberAndName     = $request->request->get('routeNumberAndName');
+        $adressComplement       = $request->request->get('adressComplement');
+        $postalCode             = $request->request->get('postalCode');
+        $city                   = $request->request->get('city');
+        $homePhone              = $request->request->get('homePhone');
+        $cellPhone              = $request->request->get('cellPhone');
+        $phoneJob               = $request->request->get('phoneJob');
+        $email                  = $request->request->get('email');
+        $dateOfCirculation      = $request->request->get('dateOfCirculation');
+        $purchaseDate           = $request->request->get('purchaseDate');
+        $lastEventDate          = $request->request->get('lastEventDate');
+        $brandName              = $request->request->get('brandName');
+        $modelWording           = $request->request->get('modelWording');
+        $version                = $request->request->get('version');
+        $vin                    = $request->request->get('vin');
+        $registration           = $request->request->get('registration');
+        $leadType               = $request->request->get('leadType');
+        $mileage                = $request->request->get('mileage');
+        $energyLabel            = $request->request->get('energyLabel');
+        $sellerVN               = $request->request->get('sellerVN');
+        $sellerVO               = $request->request->get('sellerVO');
+        $billingComment         = $request->request->get('billingComment');
+        $typeVoVn               = $request->request->get('typeVoVn');
+        $fileNumberVnVo         = $request->request->get('fileNumberVnVo');
+        $vnSalesIntermediary    = $request->request->get('vnSalesIntermediary');
+        $eventDate              = $request->request->get('eventDate');
+        $originOfEvent          = $request->request->get('originOfEvent');
+
+        $evenement              = new Evenements();
+
+        $evenement->setBusinessAccount($compteAffaire);
+        $evenement->setEventAccount($compteEvenement);
+        $evenement->setLastEventCount($lastEventCount);
+        $evenement->setFileNumber(intval($fileNumber));
+        $evenement->setCivilityWording($civilityWording);
+        $evenement->setCurrentVehicleOwner($currentVehicleOwner);
+        $evenement->setName($name);
+        $evenement->setFirstName($firstName);
+        $evenement->setRouteNumberAndName($routeNumberAndName);
+        $evenement->setAdressComplement($adressComplement);
+        $evenement->setPostalCode($postalCode);
+        $evenement->setCity($city);
+        $evenement->setHomePhone($homePhone);
+        $evenement->setCellPhone($cellPhone);
+        $evenement->setPhoneJob($phoneJob);
+        $evenement->setEmail($email);
+        $evenement->setDateOfCirculation(new \DateTime($dateOfCirculation));
+        $evenement->setPurchaseDate(new \DateTime($purchaseDate));
+        $evenement->setLastEventDate(new \DateTime($lastEventDate));
+        $evenement->setBrandName($brandName);
+        $evenement->setModelWording($modelWording);
+        $evenement->setVersion($version);
+        $evenement->setVin($vin);
+        $evenement->setRegistration($registration);
+        $evenement->setLeadType($leadType);
+        $evenement->setMileage($mileage);
+        $evenement->setEnergyLabel($energyLabel);
+        $evenement->setSellerVN($sellerVN);
+        $evenement->setSellerVO($sellerVO);
+        $evenement->setBillingComment($billingComment);
+        $evenement->setTypeVoVn($typeVoVn);
+        $evenement->setFileNumber($fileNumberVnVo);
+        $evenement->setVnSalesIntermediary($vnSalesIntermediary);
+        $evenement->setEventDate(new \DateTime($eventDate));
+        $evenement->setOriginOfEvent($originOfEvent);
+
+        $evenementsRepository->save($evenement);
+
+        return new JsonResponse(['message' => 'L\'événement a été ajouté avec succès.']);
+    }
+
     #[Route('/{id}/show', name: 'show_evenement', methods: ['GET'])]
     public function show(Evenements $evenement): Response
     {
@@ -186,24 +272,28 @@ class ImportEvenementController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'edit_evenement', methods:['GET', 'POST'])]
-    public function edit(Request $request, Evenements $bom, EvenementsRepository $evenementsRepository): Response
+    public function edit(Request $request, Evenements $evenement, EvenementsRepository $evenementsRepository): Response
     {
-        return $this->render('import_evenement/edit.html.twig');
+        $form = $this->createForm(EvenementType::class, $evenement);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->em->flush();
+
+            return $this->redirectToRoute('import_evenements');
+        }
+
+        return $this->render('import_evenement/edit.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 
     #[Route('/{id}/delete', name: 'delete_evenement', methods:['GET'])]
     public function delete(Evenements $evenement, EvenementsRepository $evenementsRepository): Response
     {
-        $id    = $evenement->getId();
-        $order = $evenementsRepository->findBy(['id' => $id]);
+        $evenement->setDeletedAt(new \DateTime());
+        $this->em->flush();
 
-        if(empty($order)){
-            $evenementsRepository->remove($evenement, true);
-            $this->addFlash('success', 'Suppression réussie');
-        } else {
-            $this->addFlash('error', 'Erreur de suppression');
-        }
-
-        return $this->redirectToRoute('app_import_evenement');
+        return new JsonResponse(['message' => 'L\'événement a été marqué comme supprimé avec succès.'], Response::HTTP_OK);
     }
 }

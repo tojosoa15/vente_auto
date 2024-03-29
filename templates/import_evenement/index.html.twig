@@ -6,11 +6,15 @@
 
 {% block stylesheets %}
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/datatables/datatables.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/evenement.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/bootstrap/bootstrap.min.css') }}">
 {% endblock %}
 
 {% block javascripts %}
     <script src="{{ asset('assets/jquery/jquery-3.7.1.min.js') }}"></script>
     <script src="{{ asset('assets/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/evenement.js') }}"></script>
+    <script src="{{ asset('assets/js/bootstrap/bootstrap.min.js') }}"></script>
 {% endblock %}
 
 {% block body %}
@@ -18,18 +22,31 @@
 
     {{ form_start(form) }}
     {{ form_row(form.file) }}
-    <button type="submit">Import</button>
+    <button type="submit" class="btn btn-success">Importer liste</button>
     {{ form_end(form) }}
+    <br> <br>
 
     <h2>Liste des evenements</h2>
+
+    <div id="success-response" class="success-message"></div>
+
+    <button id="add-evenement-btn" class="btn btn-primary">Ajouter un événement</button>
+
     <div class="table-responsive  kl-table-responsive datatable-custom kl-default-table-resp kl-bg-white">
         <table id="evenements-table" class="display"
+                data-url= "{{ path('evenements_list') }}"
                 data-url-edit="{{ path('edit_evenement', { id : 0}) }}"
                 data-url-delete="{{ path('delete_evenement', { id : 0}) }}"
                 data-url-show="{{ path('show_evenement', { id : 0} ) }}"
+                data-url-list="{{ path('evenements_list') }}"
+                data-url-add="{{ path('add_evenement') }}"
+                data-src-show="{{ asset('assets/theme/img/icon/icons-show.png') }}"
+                data-src-edit="{{ asset('assets/theme/img/icon/icons-edit.svg') }}"
+                data-src-delete="{{ asset('assets/theme/img/icon/icons-delete.svg') }}"
                 class="table w-100 table-lg table-borderless  kl-table-striped table-thead-bordered table-nowrap table-align-middle card-table mb-0">
             <thead class="thead-light">
                 <tr>
+                    <th>Identifiant</th>
                     <th>Compte Affaire</th>
                     <th>Compte évènement (Veh)</th>
                     <th>Compte dernier évènement (Veh)</th>
@@ -73,79 +90,203 @@
         </table>
     </div>
 
-    <script>
-    $(document).ready(function() {
-            $('#evenements-table').DataTable({
-                "processing": true,
-                "serverSide": true,
-                "ajax": "{{ path('evenements_list') }}",
-                "columns": [
-                    {"data": "compteAffaire"},
-                    {"data": "compteEvenement"},
-                    {"data": "lastEventCount"},
-                    {"data": "fileNumber"},
-                    {"data": "civilityWording"},
-                    {"data": "currentVehicleOwner"},
-                    {"data": "name"},
-                    {"data": "firstName"},
-                    {"data": "routeNumberAndName"},
-                    {"data": "adressComplement"},
-                    {"data": "postalCode"},
-                    {"data": "city"},
-                    {"data": "homePhone"},
-                    {"data": "cellPhone"},
-                    {"data": "phoneJob"},
-                    {"data": "email"},
-                    {"data": "dateOfCirculation"},
-                    {"data": "purchaseDate"},
-                    {"data": "lastEventDate"},
-                    {"data": "brandName"},
-                    {"data": "modelWording"},
-                    {"data": "version"},
-                    {"data": "vin"},
-                    {"data": "registration"},
-                    {"data": "leadType"},
-                    {"data": "mileage"},
-                    {"data": "energyLabel"},
-                    {"data": "sellerVN"},
-                    {"data": "sellerVO"},
-                    {"data": "billingComment"},
-                    {"data": "typeVoVn"},
-                    {"data": "fileNumberVnVo"},
-                    {"data": "vnSalesIntermediary"},
-                    {"data": "eventDate"},
-                    {"data": "originOfEvent"},
-                    {
-                        "data": "id",
-                        render: function (data, type, row) {
-                            let urlDelete = $('#evenements-table').data('url-delete').replace('/0/', '/' + data + '/');
-                            let urlEdit   = $('#evenements-table').data('url-edit').replace('/0/', '/' + data + '/');
-                            let urlShow   = $('#evenements-table').data('url-show').replace('/0/', '/' + data + '/');
+    <!-- Modal -->
 
-                            let showButton = `<div class="d-flex align-items-center">
-                                <a href="${urlShow}" class="p-0 btn btn-icon btn-sm  kl-text-21 " data-toggle="tooltip" title="Voir" >
-                                    <img src="{{ asset('assets/theme/img/icon/icons-show.png') }}" alt="Supprimer">
-                                </a>`;
-                            let editButton = `<a href="${urlEdit}" class="p-0 pt-2 btn btn-icon btn-sm pen-vertical-icon kl-text-21"
-                                    data-toggle="tooltip" title="Modifier" >
-                                    <img src="{{ asset('assets/theme/img/icon/icons-edit.svg') }}" alt="Supprimer">
-                                </a>`;
-                            let deleteButton = `<a href="javascript:;" data-href="${urlDelete}" class="p-0 btn btn-icon btn-sm remove-item-datatable  kl-text-21"
-                                data-message="Êtes-vous sûr de bien vouloir supprimer cette evenement?"
-                                data-toggle="tooltip" title="Supprimer" >
-                                    <img src="{{ asset('assets/theme/img/icon/icons-delete.svg') }}" alt="Supprimer">
-                                </a>`;
+   <div class="modal fade" id="ajoutEvenementModal" tabindex="-1" role="dialog" aria-labelledby="ajoutEvenementModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ajoutEvenementModalLabel">Ajouter un événement</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="ajout-evenement-form">
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="compteAffaire">Compte Affaire :</label>
+                                <input type="text" class="form-control" id="compteAffaire" name="compteAffaire">
+                            </div>
+                            <div class="form-group">
+                                <label for="compteEvenement">Compte événement :</label>
+                                <input type="text" class="form-control" id="compteEvenement" name="compteEvenement">
+                            </div>
+                            <div class="form-group">
+                                <label for="lastEventCount">Compte dernier évènement (Veh) :</label>
+                                <input type="text" class="form-control" id="lastEventCount" name="lastEventCount">
+                            </div>
+                        </div>
 
-                            return `<div class="d-flex align-items-center">${showButton} ${editButton} ${deleteButton}</div>`;
-                        }
-                    }
-                ],
-                "ajax": {
-                    "url": "{{ path('evenements_list') }}",
-                    "dataSrc": ""
-                }
-            });
-        });
-    </script>
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="fileNumber">Numéro de fiche :</label>
+                                <input type="text" class="form-control" id="fileNumber" name="fileNumber">
+                            </div>
+                            <div class="form-group">
+                                <label for="civilityWording">Libellé civilité :</label>
+                                <input type="text" class="form-control" id="civilityWording" name="civilityWording">
+                            </div>
+                            <div class="form-group">
+                                <label for="currentVehicleOwner">Propriétaire actuel du véhicule :</label>
+                                <input type="text" class="form-control" id="currentVehicleOwner" name="currentVehicleOwner">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="name">Nom :</label>
+                                <input type="text" class="form-control" id="name" name="name">
+                            </div>
+                            <div class="form-group">
+                                <label for="firstName">Prénom :</label>
+                                <input type="text" class="form-control" id="firstName" name="firstName">
+                            </div>
+                            <div class="form-group">
+                                <label for="routeNumberAndName">N° et Nom de la voie :</label>
+                                <input type="text" class="form-control" id="routeNumberAndName" name="routeNumberAndName">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="adressComplement">Complément adresse 1 :</label>
+                                <input type="text" class="form-control" id="adressComplement" name="adressComplement">
+                            </div>
+                            <div class="form-group">
+                                <label for="postalCode">Code postal :</label>
+                                <input type="text" class="form-control" id="postalCode" name="postalCode">
+                            </div>
+                            <div class="form-group">
+                                <label for="city">Ville :</label>
+                                <input type="text" class="form-control" id="city" name="city">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="homePhone">Tel domicile :</label>
+                                <input type="text" class="form-control" id="homePhone" name="homePhone">
+                            </div>
+                            <div class="form-group">
+                                <label for="cellPhone">Tel portable :</label>
+                                <input type="text" class="form-control" id="cellPhone" name="cellPhone">
+                            </div>
+                            <div class="form-group">
+                                <label for="phoneJob">Tel job :</label>
+                                <input type="text" class="form-control" id="phoneJob" name="phoneJob">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="email">Email :</label>
+                                <input type="text" class="form-control" id="email" name="email">
+                            </div>
+                            <div class="form-group">
+                                <label for="dateOfCirculation">Date de mise en circulation :</label>
+                                <input type="date" class="form-control" id="dateOfCirculation" name="dateOfCirculation">
+                            </div>
+                            <div class="form-group">
+                                <label for="purchaseDate">Tel job :</label>
+                                <input type="date" class="form-control" id="purchaseDate" name="purchaseDate">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="lastEventDate">Date dernier évènement (Veh) :</label>
+                                <input type="date" class="form-control" id="lastEventDate" name="lastEventDate">
+                            </div>
+                            <div class="form-group">
+                                <label for="brandName">Libellé marque (Mrq) :</label>
+                                <input type="text" class="form-control" id="brandName" name="brandName">
+                            </div>
+                            <div class="form-group">
+                                <label for="modelWording">Libellé modèle (Mod) :</label>
+                                <input type="text" class="form-control" id="modelWording" name="modelWording">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="version">Version :</label>
+                                <input type="text" class="form-control" id="version" name="version">
+                            </div>
+                            <div class="form-group">
+                                <label for="vin">VIN :</label>
+                                <input type="text" class="form-control" id="vin" name="vin">
+                            </div>
+                            <div class="form-group">
+                                <label for="registration">Immatriculation :</label>
+                                <input type="text" class="form-control" id="registration" name="registration">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="leadType">Type de prospect :</label>
+                                <input type="text" class="form-control" id="leadType" name="leadType">
+                            </div>
+                            <div class="form-group">
+                                <label for="mileage">Kilometrage :</label>
+                                <input type="text" class="form-control" id="mileage" name="mileage">
+                            </div>
+                            <div class="form-group">
+                                <label for="energyLabel">Libellé energie :</label>
+                                <input type="text" class="form-control" id="energyLabel" name="energyLabel">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="sellerVN">Vendeur vn :</label>
+                                <input type="text" class="form-control" id="sellerVN" name="sellerVN">
+                            </div>
+                            <div class="form-group">
+                                <label for="sellerVO">Vendeur vo :</label>
+                                <input type="text" class="form-control" id="sellerVO" name="sellerVO">
+                            </div>
+                            <div class="form-group">
+                                <label for="billingComment">Commentaire de facturation (Veh) :</label>
+                                <input type="text" class="form-control" id="billingComment" name="billingComment">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="typeVoVn">Type vn vo :</label>
+                                <input type="text" class="form-control" id="typeVoVn" name="typeVoVn">
+                            </div>
+                            <div class="form-group">
+                                <label for="fileNumberVnVo">Numéro de dossier VN VO :</label>
+                                <input type="text" class="form-control" id="fileNumberVnVo" name="fileNumberVnVo">
+                            </div>
+                            <div class="form-group">
+                                <label for="vnSalesIntermediary">Intermediaire de vente VN :</label>
+                                <input type="text" class="form-control" id="vnSalesIntermediary" name="vnSalesIntermediary">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="eventDate">Date évènement (Veh) :</label>
+                                <input type="date" class="form-control" id="eventDate" name="eventDate">
+                            </div>
+                            <div class="form-group">
+                                <label for="originOfEvent">Origine évènement (Veh) :</label>
+                                <input type="text" class="form-control" id="originOfEvent" name="originOfEvent">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" form="ajout-evenement-form" class="btn btn-primary">Ajouter</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 {% endblock %}

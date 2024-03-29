@@ -1,0 +1,32 @@
+.success-message {
+    display: none;
+}
+
+.success-message.show {
+    display: block;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: green;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    animation: fadeOut 5s forwards;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.modal-dialog {
+    max-width: 750px!important;
+}
+
+.form-group {
+    padding: 5px!important;
+}
