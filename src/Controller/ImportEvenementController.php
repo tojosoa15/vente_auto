@@ -103,6 +103,7 @@ class ImportEvenementController extends AbstractController
                 $evenement->setVnSalesIntermediary($evenementData[32]);
                 $evenement->setEventDate($eventDate);
                 $evenement->setOriginOfEvent($evenementData[34]);
+
                 // Persist evenement entity
                 $entityManager->persist($evenement);
             }
@@ -247,7 +248,7 @@ class ImportEvenementController extends AbstractController
         $evenement->setVin($vin);
         $evenement->setRegistration($registration);
         $evenement->setLeadType($leadType);
-        $evenement->setMileage($mileage);
+        $evenement->setMileage(intval($mileage));
         $evenement->setEnergyLabel($energyLabel);
         $evenement->setSellerVN($sellerVN);
         $evenement->setSellerVO($sellerVO);
@@ -258,7 +259,9 @@ class ImportEvenementController extends AbstractController
         $evenement->setEventDate(new \DateTime($eventDate));
         $evenement->setOriginOfEvent($originOfEvent);
 
-        $evenementsRepository->save($evenement);
+        $this->em->persist($evenement);
+
+        $this->em->flush();
 
         return new JsonResponse(['message' => 'L\'événement a été ajouté avec succès.']);
     }

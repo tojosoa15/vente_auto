@@ -178,15 +178,15 @@ class EvenementType extends AbstractType
         ])
         ->add('dateOfCirculation', DateType::class, [
             'widget' => 'single_text',
-            'label'         => 'Date de mise en circulation  :'
+            'label'  => 'Date de mise en circulation  :'
         ])
         ->add('purchaseDate', DateType::class, [
             'widget' => 'single_text',
-            'label'         => 'Date achat (date de livraison)  :'
+            'label'  => 'Date achat (date de livraison)  :'
         ])
         ->add('lastEventDate', DateType::class, [
             'widget' => 'single_text',
-            'label'         => 'Date dernier évènement (Veh)  :'
+            'label'  => 'Date dernier évènement (Veh)  :'
         ])
         ->add('brandName', TextType::class, [
             'label'         => 'Libellé marque  :',
@@ -329,8 +329,8 @@ class EvenementType extends AbstractType
             ],
         ])
         ->add('eventDate', DateType::class, [
-            'widget' => 'single_text',
-            'label'         => 'Date évènement (Veh)  :',
+            'widget'    => 'single_text',
+            'label'     => 'Date évènement (Veh)  :',
         ])
         ->add('originOfEvent', TextType::class, [
             'label'         => 'Origine évènement  :',

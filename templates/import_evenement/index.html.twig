@@ -6,15 +6,15 @@
 
 {% block stylesheets %}
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/datatables/datatables.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/evenement.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/bootstrap/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/evenement.css') }}">
 {% endblock %}
 
 {% block javascripts %}
     <script src="{{ asset('assets/jquery/jquery-3.7.1.min.js') }}"></script>
     <script src="{{ asset('assets/datatables/datatables.min.js') }}"></script>
-    <script src="{{ asset('assets/js/evenement.js') }}"></script>
     <script src="{{ asset('assets/js/bootstrap/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('assets/js/evenement.js') }}"></script>
 {% endblock %}
 
 {% block body %}
@@ -43,6 +43,7 @@
                 data-src-show="{{ asset('assets/theme/img/icon/icons-show.png') }}"
                 data-src-edit="{{ asset('assets/theme/img/icon/icons-edit.svg') }}"
                 data-src-delete="{{ asset('assets/theme/img/icon/icons-delete.svg') }}"
+                data-frenchjson="{{ asset('assets/i18n/French.json') }}"
                 class="table w-100 table-lg table-borderless  kl-table-striped table-thead-bordered table-nowrap table-align-middle card-table mb-0">
             <thead class="thead-light">
                 <tr>
